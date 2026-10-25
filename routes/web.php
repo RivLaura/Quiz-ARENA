@@ -55,7 +55,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/resultados/{gameRoom}', [ResultsController::class, 'show'])->name('admin.resultados.show');
 });
 
+
 Route::get('/emisor', [RemoteStyleController::class, 'emisor'])->name('emisor');
 Route::post('/emitir', [RemoteStyleController::class, 'emitir'])->name('emitir');
-
 Route::get('/receptor', [RemoteStyleController::class, 'receptor'])->name('receptor');

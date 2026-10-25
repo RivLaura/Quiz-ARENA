@@ -61,11 +61,24 @@ class JoinController extends Controller
         return redirect()->route('join.lobby', $player);
     }
 
-    public function answer(StorePlayerAnswerRequest $request, Player $player, GameEngine $gameEngine): RedirectResponse
-    {
-        $gameEngine->submitAnswer($player, $request->integer('option_id'));
+    public function answer(
+        StorePlayerAnswerRequest $request,
+        Player $player,
+        GameEngine $gameEngine
+    ): RedirectResponse {
+        abort_unless(
+            $request->session()->has('joined_players.'.$player->id),
+            404
+        );
 
-        return redirect()->route('join.lobby', $player)->with('ok', 'Respuesta registrada.');
+        $gameEngine->submitAnswer(
+            $player,
+            $request->integer('option_id')
+        );
+
+        return redirect()
+            ->route('join.lobby', $player)
+            ->with('ok', 'Respuesta registrada.');
     }
 
     public function state(Request $request, Player $player, GameEngine $gameEngine): JsonResponse

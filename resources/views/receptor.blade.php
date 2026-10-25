@@ -16,18 +16,36 @@
   <div id="target-div">Esperando mensaje...</div> 
 </div> 
  
-<script> 
-  document.addEventListener('DOMContentLoaded', function () { 
-    const targetDiv = document.getElementById('target-div'); 
- 
-    // Suscripción al canal público y escucha del evento 
-    window.Echo.channel('style-channel') 
-      .listen('.RemoteStyleUpdate', (e) => { 
-        // El nombre con punto (.) escucha usando broadcastAs() 
-        targetDiv.innerText = e.newText ?? ''; 
-        targetDiv.style.cssText = e.newStyle ?? ''; 
-      }); 
-  }); 
-</script> 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const targetDiv = document.getElementById('target-div');
+
+    if (!window.Echo) {
+        console.error('ERROR: Laravel Echo no está inicializado');
+        targetDiv.innerText = 'Error: Laravel Echo no está disponible';
+        return;
+    }
+
+    console.log('Laravel Echo inicializado correctamente');
+
+    const pusher = window.Echo.connector.pusher;
+
+    pusher.connection.bind('connected', () => {
+        console.log('WebSocket conectado a Laravel Reverb');
+    });
+
+    pusher.connection.bind('error', (error) => {
+        console.error('Error de conexión WebSocket:', error);
+    });
+
+    window.Echo.channel('style-channel')
+        .listen('.RemoteStyleUpdate', (e) => {
+            console.log('Evento recibido:', e);
+
+            targetDiv.innerText = e.newText ?? '';
+            targetDiv.style.cssText = e.newStyle ?? '';
+        });
+});
+</script>
 </body> 
 </html>
